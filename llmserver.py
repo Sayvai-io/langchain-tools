@@ -17,9 +17,14 @@ with open("SERP_API_KEY.txt", "r") as f:
 os.environ["OPENAI_API_KEY"] = OPEN_AI_KEY
 os.environ["SERPAPI_API_KEY"] = SERP_API_KEY
 
+
+class CustomError(Exception):
+    pass
+
+
 class LlmServer:
     """LLm server class"""
-    def _init_(self) -> None:
+    def __init__(self) -> None:
         self.llm = ChatOpenAI(temperature=0, model="gpt-3.5-turbo-0613")
         self.tools = None
         self.agent = None
@@ -32,5 +37,7 @@ class LlmServer:
         return "Initialized"
     
     def get_response(self, text: str) -> Dict[str, Any]:
+        if self.agent is None:
+            raise CustomError('Not Initialized error')
         response = self.agent.run(text)
         return response
