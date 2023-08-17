@@ -9,9 +9,6 @@ from langchain.llms import OpenAI
 from langchain.chains import LLMChain
 from langchain.prompts import PromptTemplate
 # from langchain.llms import OpenAI
-from langchain.llms import OpenAI
-from langchain.chains import LLMChain
-from langchain.prompts import PromptTemplate
 from langchain.chains import SimpleSequentialChain
 
 with open("OPEN_AI_KEY.txt", "r") as f:
@@ -34,7 +31,8 @@ class LlmServer:
         self.llm = ChatOpenAI(temperature=0, model="gpt-3.5-turbo-0613")
         self.tools = None
         self.agent = None
-    
+        self.chain = None
+
     def initialize_agent(self, tools: List, agent: str) -> str:
         """Initialize the server"""
         if self.tools is None:
@@ -43,11 +41,24 @@ class LlmServer:
         return "Initialized"
     
     def initialize_llm(self):
-    
-    def get_response(self, text: str) -> Dict[str, Any]:
-        if self.agent is None:
-            raise CustomError('Not Initialized error')
-        response = self.agent.run(text)
-        return response
+        template = """You're talking to a friendly agent named Kedar. Context: {output}
+                        He will greet according to your query. 
+                        
+                        User: hi
+                        Kedar: hello, how may I help you today?
+                        User: how are you?
+                        Kedar: I'm good, thanks for asking. How about you?
+                        """
 
+        prompt = PromptTemplate(input=['output'], template=template)
+        self.chain = LLMChain(llm=self.llm, prompt=prompt)
     
+    # def get_response(self, text: str) -> Dict[str, Any]:
+    #     if self.agent is None:
+    #         raise CustomError('Not Initialized error')
+    #     response = self.agent.run(text)
+    #     return response
+
+    def get_response(self, text: str, verbose: bool=True):
+        response = SimpleSequentialChain(chains=[self.agent, self.chain], verbose=verbose)
+        return response.run(text)
