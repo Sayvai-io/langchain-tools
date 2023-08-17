@@ -5,6 +5,9 @@ from langchain.chat_models import ChatOpenAI
 from typing import List, Dict, Any
 from langchain.agents import load_tools
 from langchain.agents import initialize_agent
+from langchain.llms import OpenAI
+from langchain.chains import LLMChain
+from langchain.prompts import PromptTemplate
 # from langchain.llms import OpenAI
 
 
@@ -33,7 +36,7 @@ class LlmServer:
         """Initialize the server"""
         if self.tools is None:
             self.tools = load_tools(tools, llm=self.llm)
-        self.agent = initialize_agent(self.tools, self.llm, agent, verbose=False)
+        self.agent = initialize_agent(self.tools, self.llm, agent, verbose=True)
         return "Initialized"
     
     def get_response(self, text: str) -> Dict[str, Any]:
