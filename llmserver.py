@@ -53,12 +53,12 @@ class LlmServer:
         prompt = PromptTemplate(input=['output'], template=template)
         self.chain = LLMChain(llm=self.llm, prompt=prompt)
     
-    # def get_response(self, text: str) -> Dict[str, Any]:
-    #     if self.agent is None:
-    #         raise CustomError('Not Initialized error')
-    #     response = self.agent.run(text)
-    #     return response
+    def get_response(self, text: str) -> Dict[str, Any]:
+        if self.agent is None:
+            raise CustomError('Not Initialized error')
+        response = self.agent.run(text)
+        return response
 
-    def get_response(self, text: str, verbose: bool=True):
-        response = SimpleSequentialChain(chains=[self.agent, self.chain], verbose=verbose)
-        return response.run(text)
+    # def get_response(self, text: str, verbose: bool=True):
+    #     response = SimpleSequentialChain(chains=[self.agent, self.chain], verbose=verbose)
+    #     return response.run(text)
